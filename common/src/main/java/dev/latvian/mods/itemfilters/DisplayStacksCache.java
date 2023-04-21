@@ -19,6 +19,7 @@ public class DisplayStacksCache {
     private static final int MAX_CACHE_SIZE = 1024;
     private static final Object2ObjectLinkedOpenHashMap<CacheKey, List<ItemStack>> cache = new Object2ObjectLinkedOpenHashMap<>(MAX_CACHE_SIZE);
     private static final NonNullList<ItemStack> allKnownStacks = NonNullList.create();
+    private static final NonNullList<ItemStack> extraStacks = NonNullList.create();
 
     @Nonnull
     public static List<ItemStack> getCachedDisplayStacks(ItemStack filterStack) {
@@ -45,6 +46,7 @@ public class DisplayStacksCache {
                 } catch (Throwable ignored) {
                 }
             }
+            allKnownStacks.addAll(extraStacks);
         }
 
         IItemFilter f = (IItemFilter) filterStack.getItem();
@@ -53,6 +55,13 @@ public class DisplayStacksCache {
 
     public static void clear() {
         cache.clear();
+    }
+
+    public static void registerCustomStacks(ItemStack[] stacks) {
+        if (!allKnownStacks.isEmpty()) {
+            throw new IllegalStateException("called too late! known stacks already populated!");
+        }
+        extraStacks.addAll(Arrays.asList(stacks));
     }
 
     private static class CacheKey {

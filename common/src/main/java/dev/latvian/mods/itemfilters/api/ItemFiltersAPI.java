@@ -1,5 +1,6 @@
 package dev.latvian.mods.itemfilters.api;
 
+import dev.latvian.mods.itemfilters.DisplayStacksCache;
 import dev.latvian.mods.itemfilters.ItemFilters;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -122,5 +123,20 @@ public class ItemFiltersAPI {
 		CustomFilter filter = new CustomFilter(id, predicate);
 		CUSTOM_FILTERS.put(id, filter);
 		return filter;
+	}
+
+	/**
+	 * Register one or more custom items which will be considered valid items for display purposes
+	 * (see {@link #getDisplayItemStacks(ItemStack, List)}), augmenting the default list obtained from the creative search
+	 * tab. This is mainly useful for adding existing items with custom NBT data which are not already in the creative
+	 * search list (e.g. custom tools from mods such as Tinker's Construct or Tetra...)
+	 * <p>
+	 * This is only useful on the client, since it's purely for returning items for display purposes.
+	 *
+	 * @param stacks the item(s) to add
+	 * @throws IllegalStateException if called too late: must be called at client startup, before any filters are queried
+	 */
+	public static void registerCustomDisplayItems(ItemStack... stacks) {
+		DisplayStacksCache.registerCustomStacks(stacks);
 	}
 }
